@@ -1,3 +1,5 @@
+import { Redis } from "ioredis";
+
 export enum Channels {
   PING = "ping",
   PRINT = "print",
@@ -6,19 +8,28 @@ export enum Channels {
 
 const Subscribe = (): Promise<void> => {
   return new Promise((resolve, reject) => {
-    if (subscriber == null) {
-      return reject(new Error("Cannot listen to subscriber before initialized"))
-    }
+    const client = new Redis(process.env.REDIS_URL!)
 
     const channels = Object.keys(Channels).map((key) => Object(Channels)[key]);
   
-    subscriber.subscribe(...channels, (err, count) => {
+    client.subscribe(...channels, (err, count) => {
       if (err) {
         return reject(err)
       }
   
       console.log(`Successfully subscribed to ${count} channels`)
       resolve()
+    });
+
+    client.on("messageBuffer", (channel, buffer) => {
+      switch (channel.toString()) {
+        case Channels.PRINT: 
+            break;
+        case Channels.PING:
+            break;
+        case Channels.ERROR:
+            break;        
+      }
     });
   })
 };

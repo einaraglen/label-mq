@@ -1,5 +1,6 @@
 import dotenv from "dotenv";
 import * as path from "path";
+import { resolve } from "path";
 
 const variables = [
   "REDIS_URL",
